@@ -157,11 +157,23 @@ const StepPilihJadwal = ({
     }
 
     // 2. Filter by Class Type (teaching_categories)
-    if (selectedClassType && inst.teaching_categories) {
-      const matchesCategory = inst.teaching_categories.some(
-        (cat) => cat.toLowerCase() === selectedClassType.toLowerCase(),
-      );
-      if (!matchesCategory) return false;
+    if (selectedClassType) {
+      if (!inst.teaching_categories) {
+        // console.log(`Instructor ${inst.name} excluded: No teaching_categories`);
+        return false;
+      }
+      
+      const matchesCategory = inst.teaching_categories.some((cat) => {
+        const catClean = cat.trim().toLowerCase();
+        const selectedClean = selectedClassType.trim().toLowerCase();
+        // console.log(`Checking ${inst.name}: ${catClean} === ${selectedClean}`);
+        return catClean === selectedClean;
+      });
+
+      if (!matchesCategory) {
+         // console.log(`Instructor ${inst.name} excluded: Category mismatch (${inst.teaching_categories.join(",")} vs ${selectedClassType})`);
+         return false;
+      }
     }
 
     return true;
@@ -185,10 +197,14 @@ const StepPilihJadwal = ({
           }
 
           let matchesClass = true;
-          if (selectedClassType && s.instructor_teaching_categories) {
-            matchesClass = s.instructor_teaching_categories.some(
-              (cat) => cat.toLowerCase() === selectedClassType.toLowerCase(),
-            );
+          if (selectedClassType) {
+            if (!s.instructor_teaching_categories) {
+               matchesClass = false;
+            } else {
+               matchesClass = s.instructor_teaching_categories.some(
+                (cat) => cat.toLowerCase() === selectedClassType.toLowerCase(),
+              );
+            }
           }
 
           return (
