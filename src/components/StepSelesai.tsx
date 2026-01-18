@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { jsPDF } from "jspdf";
+import shemaLogo from "../assets/shemalogo.png";
 
 const StepSelesai = () => {
   const [registrationData, setRegistrationData] = useState<any>(null);
+  const [logoBase64, setLogoBase64] = useState<string>("");
 
   // helper ambil cookie
   const getCookie = (name: string) => {
@@ -18,12 +21,260 @@ const StepSelesai = () => {
     if (finalData) {
       setRegistrationData(JSON.parse(finalData));
     }
+
+    // Load logo as base64
+    const loadLogo = async () => {
+      try {
+        const response = await fetch(shemaLogo);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setLogoBase64(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error("Failed to load logo:", error);
+      }
+    };
+    loadLogo();
   }, []);
 
   // ambil data dari registrationData
   const dataDiri = registrationData?.dataDiri || {};
   const jadwal = registrationData?.jadwal || {};
   const pembayaran = registrationData?.pembayaran || {};
+  const bookingId = registrationData?.bookingId || "-";
+
+  // Generate PDF function
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPos = 20;
+
+    // Colors - Maroon instead of bright red
+    const maroonColor: [number, number, number] = [128, 0, 32]; // Maroon
+    const textDark: [number, number, number] = [31, 41, 55]; // Gray-800
+    const textGray: [number, number, number] = [107, 114, 128]; // Gray-500
+
+    // Header - Logo/Brand Name with Maroon
+    doc.setFillColor(...maroonColor);
+    doc.rect(0, 0, pageWidth, 45, "F");
+
+    // Add logo if available
+    if (logoBase64) {
+      try {
+        doc.addImage(logoBase64, "PNG", 15, 8, 28, 28);
+      } catch (error) {
+        console.error("Failed to add logo to PDF:", error);
+      }
+    }
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text("ShemaMusic", pageWidth / 2 + 10, 22, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Kursus Musik Profesional", pageWidth / 2 + 10, 32, {
+      align: "center",
+    });
+
+    yPos = 60;
+
+    // Title
+    doc.setTextColor(...textDark);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("BUKTI PENDAFTARAN KURSUS", pageWidth / 2, yPos, {
+      align: "center",
+    });
+
+    yPos += 10;
+
+    // Booking ID
+    doc.setFontSize(10);
+    doc.setTextColor(...textGray);
+    doc.setFont("helvetica", "normal");
+    doc.text(`No. Pendaftaran: ${bookingId}`, pageWidth / 2, yPos, {
+      align: "center",
+    });
+
+    yPos += 15;
+
+    // Separator line
+    doc.setDrawColor(...maroonColor);
+    doc.setLineWidth(0.5);
+    doc.line(20, yPos, pageWidth - 20, yPos);
+
+    yPos += 15;
+
+    // Section 1: Data Diri
+    doc.setTextColor(...maroonColor);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("DATA DIRI", 20, yPos);
+    yPos += 8;
+
+    doc.setTextColor(...textDark);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    const dataDiriItems = [
+      { label: "Nama Lengkap", value: dataDiri.full_name || "-" },
+      { label: "Email", value: dataDiri.email || "-" },
+      { label: "No. Telepon", value: dataDiri.phone || "-" },
+      {
+        label: "Tanggal Lahir",
+        value: dataDiri.birth_date
+          ? new Date(dataDiri.birth_date).toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
+          : "-",
+      },
+      { label: "Alamat", value: dataDiri.address || "-" },
+    ];
+
+    dataDiriItems.forEach((item) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(`${item.label}:`, 20, yPos);
+      doc.setFont("helvetica", "normal");
+      doc.text(item.value, 70, yPos);
+      yPos += 7;
+    });
+
+    yPos += 8;
+
+    // Section 2: Detail Kursus
+    doc.setTextColor(...maroonColor);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("DETAIL KURSUS", 20, yPos);
+    yPos += 8;
+
+    doc.setTextColor(...textDark);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    const kursusItems = [
+      { label: "Instrumen", value: dataDiri.instrument || "-" },
+      { label: "Jenis Kelas", value: dataDiri.classType || "-" },
+      { label: "Tingkat", value: dataDiri.level || "-" },
+      {
+        label: "Biaya Kursus",
+        value: dataDiri.price
+          ? `Rp ${dataDiri.price.toLocaleString("id-ID")}`
+          : "-",
+      },
+    ];
+
+    kursusItems.forEach((item) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(`${item.label}:`, 20, yPos);
+      doc.setFont("helvetica", "normal");
+      doc.text(item.value, 70, yPos);
+      yPos += 7;
+    });
+
+    yPos += 8;
+
+    // Section 3: Jadwal Kursus
+    doc.setTextColor(...maroonColor);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("JADWAL KURSUS", 20, yPos);
+    yPos += 8;
+
+    doc.setTextColor(...textDark);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    if (jadwal.schedules && jadwal.schedules.length > 0) {
+      jadwal.schedules.forEach((schedule: string, index: number) => {
+        doc.text(`${index + 1}. ${schedule}`, 20, yPos);
+        yPos += 7;
+      });
+    } else {
+      doc.text("Belum ada jadwal dipilih", 20, yPos);
+      yPos += 7;
+    }
+
+    yPos += 8;
+
+    // Section 4: Pembayaran
+    doc.setTextColor(...maroonColor);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("PEMBAYARAN", 20, yPos);
+    yPos += 8;
+
+    doc.setTextColor(...textDark);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Metode Pembayaran:", 20, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.text(pembayaran.paymentMethod || "-", 70, yPos);
+    yPos += 7;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Status:", 20, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(180, 83, 9); // Amber/Orange for pending
+    doc.text("Menunggu Verifikasi", 70, yPos);
+    yPos += 15;
+
+    // Footer box
+    doc.setFillColor(254, 243, 199); // Yellow-100
+    doc.roundedRect(20, yPos, pageWidth - 40, 30, 3, 3, "F");
+
+    yPos += 8;
+    doc.setTextColor(...textDark);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("Catatan:", 25, yPos);
+    yPos += 5;
+    doc.setFont("helvetica", "normal");
+    doc.text("• Pembayaran akan diverifikasi dalam 1x24 jam", 25, yPos);
+    yPos += 5;
+    doc.text(
+      "• Anda akan dihubungi via WhatsApp untuk konfirmasi jadwal",
+      25,
+      yPos,
+    );
+
+    yPos += 20;
+
+    // Generated date
+    doc.setTextColor(...textGray);
+    doc.setFontSize(8);
+    const now = new Date();
+    doc.text(
+      `Dokumen ini digenerate pada: ${now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}`,
+      pageWidth / 2,
+      yPos,
+      { align: "center" },
+    );
+
+    // Footer branding with Maroon
+    yPos = doc.internal.pageSize.getHeight() - 15;
+    doc.setFillColor(...maroonColor);
+    doc.rect(0, yPos - 5, pageWidth, 25, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text("ShemaMusic - Kursus Musik Profesional", pageWidth / 2, yPos + 5, {
+      align: "center",
+    });
+    doc.setFontSize(8);
+    doc.text("Hubungi kami: 0811-1945-622", pageWidth / 2, yPos + 12, {
+      align: "center",
+    });
+
+    // Save the PDF
+    const fileName = `Bukti_Pendaftaran_ShemaMusic_${bookingId}.pdf`;
+    doc.save(fileName);
+  };
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg shadow-sm">
@@ -51,7 +302,7 @@ const StepSelesai = () => {
         Pendaftaran Berhasil!
       </h2>
       <p className="text-sm text-gray-600 text-center mb-8">
-        Terima kasih telah mendaftar di Sharma Music
+        Terima kasih telah mendaftar di ShemaMusic
       </p>
 
       {/* Email Info */}
@@ -195,10 +446,23 @@ const StepSelesai = () => {
           Kembali ke Beranda
         </button>
         <button
-          onClick={() => window.print()}
-          className="w-full py-3 border-2 border-gray-400 text-gray-700 font-medium rounded hover:bg-gray-50 transition-colors"
+          onClick={generatePDF}
+          className="w-full py-3 border-2 border-gray-400 text-gray-700 font-medium rounded hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
         >
-          Cetak Bukti Pendaftaran
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Download Bukti Pendaftaran (PDF)
         </button>
       </div>
 

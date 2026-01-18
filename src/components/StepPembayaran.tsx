@@ -301,7 +301,7 @@ const StepPembayaran = ({
               <div>
                 <div className="font-medium">Transfer Bank BCA</div>
                 <div className="text-sm text-gray-500">
-                  Rek: 0891556423 a/n Sharma Music
+                  Rek: 0891556423 a/n ShemaMusic
                 </div>
               </div>
             </div>
