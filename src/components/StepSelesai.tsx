@@ -15,11 +15,27 @@ const StepSelesai = () => {
     return null;
   };
 
+  // Helper to delete a cookie
+  const deleteCookie = (name: string) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
+  // Clear all registration-related cookies
+  const clearRegistrationCookies = () => {
+    deleteCookie("registrationData");
+    deleteCookie("scheduleData");
+    deleteCookie("finalRegistration");
+  };
+
   useEffect(() => {
     // ambil data final dari cookie
     const finalData = getCookie("finalRegistration");
     if (finalData) {
       setRegistrationData(JSON.parse(finalData));
+
+      // Clear cookies after successfully loading data
+      // This ensures form is clean for next registration
+      clearRegistrationCookies();
     }
 
     // Load logo as base64
@@ -305,32 +321,6 @@ const StepSelesai = () => {
         Terima kasih telah mendaftar di ShemaMusic
       </p>
 
-      {/* Email Info */}
-      <div className="bg-gray-50 rounded-lg p-6 mb-6 text-center">
-        <div className="flex justify-center mb-3">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-            <svg
-              className="w-6 h-6 text-red-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
-        </div>
-        <h3 className="font-bold mb-2">Cek Email Anda</h3>
-        <p className="text-sm text-gray-600">
-          Kami telah mengirimkan detail lengkap pendaftaran ke:
-        </p>
-        <p className="font-medium text-gray-800 mt-1">{dataDiri.email}</p>
-      </div>
-
       {/* Ringkasan Pendaftaran */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
         <h3 className="font-bold mb-4 text-center">Ringkasan Pendaftaran</h3>
@@ -420,7 +410,7 @@ const StepSelesai = () => {
           <li className="flex items-start gap-2">
             <span className="font-bold text-red-500 shrink-0">2</span>
             <span>
-              Tim kami akan memverifikasi pembayaran Anda dalam 1x24 jam
+              Tim kami akan memverifikasi pembayaran Anda dalam 3 X 24 jam
             </span>
           </li>
           <li className="flex items-start gap-2">
@@ -462,7 +452,7 @@ const StepSelesai = () => {
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          Download Bukti Pendaftaran (PDF)
+          Simpan Bukti Pendaftaran (PDF)
         </button>
       </div>
 

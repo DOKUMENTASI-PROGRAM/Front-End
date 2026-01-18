@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Course {
   id: string;
@@ -29,6 +30,7 @@ const ClassCard = ({
   featuresLeft,
   borderColor,
 }: ClassData) => {
+  const navigate = useNavigate();
   return (
     <div
       className={`w-full h-full border-2 ${borderColor} rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 bg-white flex flex-col`}
@@ -57,7 +59,10 @@ const ClassCard = ({
       </div>
 
       {/* BUTTON */}
-      <button className="mt-5 bg-red-400 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded-full w-full transition-all duration-200">
+      <button
+        onClick={() => navigate("/registration")}
+        className="mt-5 bg-red-400 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded-full w-full transition-all duration-200"
+      >
         Daftar Sekarang
       </button>
     </div>

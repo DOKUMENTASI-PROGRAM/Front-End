@@ -7,6 +7,7 @@ import StepPilihJadwal from "../components/StepPilihJadwal";
 import StepPembayaran from "../components/StepPembayaran";
 import StepSelesai from "../components/StepSelesai";
 import Navbar from "../components/Navbar";
+import Toast from "../components/Toast";
 
 const Registration = () => {
   const [step, setStep] = useState<number>(1);
@@ -14,10 +15,10 @@ const Registration = () => {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  // Toast State (prefixed with _ to suppress unused warnings)
-  const [_showToast, setShowToast] = useState(false);
-  const [_toastMessage, setToastMessage] = useState("");
-  const [_toastType, setToastType] = useState<"error" | "success" | "info">(
+  // Toast State
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"error" | "success" | "info">(
     "error",
   );
 
@@ -34,6 +35,14 @@ const Registration = () => {
     <div className="min-h-screen bg-gray-50">
       {/* NAVBAR */}
       <Navbar />
+
+      {/* Toast Notification - same as AIRecommendation */}
+      <Toast
+        message={toastMessage}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+        type={toastType}
+      />
 
       {/* CONTENT */}
       <div className="pt-24 pb-32 px-4">

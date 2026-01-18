@@ -335,19 +335,20 @@ const StepDataDiri = ({ onNext, showNotification }: StepDataDiriProps) => {
           <label className="block text-sm font-medium mb-1">
             No. Telepon / WhatsApp <span className="text-red-500">*</span>
           </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              📞
+          <div className="relative flex">
+            <span className="inline-flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l text-gray-600 text-sm font-medium">
+              +62
             </span>
             <input
               type="tel"
               name="phone"
-              placeholder="08xx-xxxx-xxxx"
+              placeholder="8xx-xxxx-xxxx"
               value={form.phone}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-r focus:outline-none focus:border-blue-500"
             />
           </div>
+          <p className="text-xs text-gray-500 mt-1">Contoh: 812-3456-7890</p>
         </div>
 
         {/* Tempat & Tanggal Lahir */}
@@ -477,14 +478,19 @@ const StepDataDiri = ({ onNext, showNotification }: StepDataDiriProps) => {
                 <label className="block text-sm font-medium mb-1">
                   No. WhatsApp Wali <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
-                  name="guardian_phone"
-                  placeholder="Masukkan nomor WA wali"
-                  value={form.guardian_phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                />
+                <div className="relative flex">
+                  <span className="inline-flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l text-gray-600 text-sm font-medium">
+                    +62
+                  </span>
+                  <input
+                    type="tel"
+                    name="guardian_phone"
+                    placeholder="8xx-xxxx-xxxx"
+                    value={form.guardian_phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-r focus:outline-none focus:border-blue-500"
+                  />
+                </div>
               </div>
             </div>
           </div>

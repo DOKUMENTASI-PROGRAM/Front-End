@@ -146,7 +146,11 @@ const StepPembayaran = ({
         payload.guardian_name = dataDiri.guardian_name;
       }
       if (dataDiri.guardian_phone && dataDiri.guardian_phone.trim() !== "") {
-        payload.guardian_wa_number = dataDiri.guardian_phone;
+        // Prepend +62 if not already present
+        const guardianPhone = dataDiri.guardian_phone.startsWith("+62")
+          ? dataDiri.guardian_phone
+          : `+62${dataDiri.guardian_phone}`;
+        payload.guardian_wa_number = guardianPhone;
       }
 
       if (schedules.length > 0) {
@@ -187,7 +191,18 @@ const StepPembayaran = ({
 
         onNext();
       } else {
-        showNotification(`Registration failed: ${result.message}`, "error");
+        // Handle specific error codes with user-friendly messages
+        if (result.error?.code === "PENDING_BOOKING_EXISTS") {
+          showNotification(
+            "Email ini sudah digunakan untuk pendaftaran kursus yang sama dan masih menunggu verifikasi. Silakan gunakan email lain atau hubungi admin.",
+            "error",
+          );
+        } else {
+          showNotification(
+            `Pendaftaran gagal: ${result.message || result.error?.message || "Terjadi kesalahan"}`,
+            "error",
+          );
+        }
       }
     } catch (error) {
       console.error("Error submitting registration:", error);
