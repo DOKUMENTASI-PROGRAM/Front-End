@@ -243,7 +243,7 @@ const About = () => {
               className="rounded-lg overflow-hidden shadow-lg h-96 border border-gray-200"
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126891.85400585255!2d106.74668704323267!3d-6.34598826725287!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69ec0904d0c9b7%3A0x6a1a1005a0d33b4d!2sDepok%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1711111111111!5m2!1sen!2sid"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d826.6!2d106.8220071!3d-6.4007864!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69eb001b2e5001%3A0xaffaa524164ed186!2sShema%20Music!5e1!3m2!1sid!2sid!4v1705596000000!5m2!1sid!2sid"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

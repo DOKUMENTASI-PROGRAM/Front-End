@@ -311,26 +311,6 @@ const StepPembayaran = ({
             <input
               type="radio"
               name="payment"
-              value="Mandiri"
-              checked={method === "Mandiri"}
-              onChange={(e) => setMethod(e.target.value)}
-              className="mr-3"
-            />
-            <div className="flex items-center gap-3 flex-1">
-              <span className="text-2xl">🏦</span>
-              <div>
-                <div className="font-medium">Transfer Bank Mandiri</div>
-                <div className="text-sm text-gray-500">
-                  Rek: 0891556423 a/n Sharma Music
-                </div>
-              </div>
-            </div>
-          </label>
-
-          <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              name="payment"
               value="GoPay"
               checked={method === "GoPay"}
               onChange={(e) => setMethod(e.target.value)}

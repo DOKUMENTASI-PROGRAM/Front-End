@@ -63,16 +63,13 @@ const Footer = () => {
             <Link to="/" className="hover:underline">
               Beranda
             </Link>
-            <Link to="/kelas" className="hover:underline">
+            <Link to="/registration" className="hover:underline">
               Daftar Kursus
             </Link>
             <Link to="/blog" className="hover:underline">
               Blog
             </Link>
-            <Link to="/aktivitas" className="hover:underline">
-              Aktivitas
-            </Link>
-            <Link to="/tentang-kami" className="hover:underline">
+            <Link to="/about" className="hover:underline">
               Tentang Kami
             </Link>
           </div>
