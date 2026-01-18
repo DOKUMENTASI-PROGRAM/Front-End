@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 // import semua step
 import StepIndicator from "../components/StepIndicator";
@@ -11,6 +12,8 @@ import Toast from "../components/Toast";
 
 const Registration = () => {
   const [step, setStep] = useState<number>(1);
+  const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
@@ -30,6 +33,42 @@ const Registration = () => {
     setToastType(type);
     setShowToast(true);
   };
+
+  // Helper to delete a cookie
+  const deleteCookie = (name: string) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
+  // Clear all registration cookies
+  const clearRegistrationCookies = () => {
+    deleteCookie("registrationData");
+    deleteCookie("scheduleData");
+    deleteCookie("finalRegistration");
+  };
+
+  // Clear cookies when navigating away from registration page
+  useEffect(() => {
+    // If we were on registration and now on different page, clear cookies
+    if (
+      prevPathRef.current === "/registration" &&
+      location.pathname !== "/registration"
+    ) {
+      clearRegistrationCookies();
+    }
+    prevPathRef.current = location.pathname;
+  }, [location.pathname]);
+
+  // Clear cookies on browser close/refresh (only if not on success step)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (step !== 4) {
+        clearRegistrationCookies();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [step]);
 
   return (
     <div className="min-h-screen bg-gray-50">
