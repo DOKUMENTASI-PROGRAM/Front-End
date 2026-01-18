@@ -236,7 +236,7 @@ const StepSelesai = () => {
     doc.text("Catatan:", 25, yPos);
     yPos += 5;
     doc.setFont("helvetica", "normal");
-    doc.text("• Pembayaran akan diverifikasi dalam 1x24 jam", 25, yPos);
+    doc.text("• Pembayaran akan diverifikasi dalam 3x24 jam", 25, yPos);
     yPos += 5;
     doc.text(
       "• Anda akan dihubungi via WhatsApp untuk konfirmasi jadwal",
