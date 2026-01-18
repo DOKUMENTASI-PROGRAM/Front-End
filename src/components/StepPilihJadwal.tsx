@@ -157,15 +157,54 @@ const StepPilihJadwal = ({
     }
 
     // 2. Filter by Class Type (teaching_categories)
-    if (selectedClassType && inst.teaching_categories) {
-      const matchesCategory = inst.teaching_categories.some(
-        (cat) => cat.toLowerCase() === selectedClassType.toLowerCase(),
-      );
-      if (!matchesCategory) return false;
+    if (selectedClassType) {
+      if (!inst.teaching_categories) {
+        // console.log(`Instructor ${inst.name} excluded: No teaching_categories`);
+        return false;
+      }
+      
+      const matchesCategory = inst.teaching_categories.some((cat) => {
+        const catClean = cat.trim().toLowerCase();
+        const selectedClean = selectedClassType.trim().toLowerCase();
+        // console.log(`Checking ${inst.name}: ${catClean} === ${selectedClean}`);
+        return catClean === selectedClean;
+      });
+
+      if (!matchesCategory) {
+         // console.log(`Instructor ${inst.name} excluded: Category mismatch (${inst.teaching_categories.join(",")} vs ${selectedClassType})`);
+         return false;
+      }
     }
 
     return true;
   });
+
+  // Helper for strict slot checking
+  const isSlotCompatible = (
+    slot: Slot,
+    instrument: string,
+    classType: string,
+  ) => {
+    // 1. Check Instrument
+    if (instrument && slot.instructor_specialization) {
+      const match = slot.instructor_specialization.some((spec) =>
+        spec.toLowerCase().includes(instrument.toLowerCase().trim()),
+      );
+      if (!match) return false;
+    }
+
+    // 2. Check Class Type (Category)
+    if (classType) {
+      if (!slot.instructor_teaching_categories) return false;
+      const match = slot.instructor_teaching_categories.some(
+        (cat) =>
+          cat.trim().toLowerCase() === classType.trim().toLowerCase(),
+      );
+      if (!match) return false;
+    }
+
+    return true;
+  };
 
   // Filter Days based on selectedInstructor
   // Find slots for this instructor that are available/bookable
@@ -175,28 +214,13 @@ const StepPilihJadwal = ({
         .filter((s) => {
           const matchesInstructor = s.instructor_id === selectedInstructorId;
           const isAvailable = s.status === "available";
-
-          // Optional extra validation: ensure slot still matches instrument & classType (server-side should handle this, but for safety)
-          let matchesInstrument = true;
-          if (selectedInstrument && s.instructor_specialization) {
-            matchesInstrument = s.instructor_specialization.some((spec) =>
-              spec.toLowerCase().includes(selectedInstrument.toLowerCase()),
-            );
-          }
-
-          let matchesClass = true;
-          if (selectedClassType && s.instructor_teaching_categories) {
-            matchesClass = s.instructor_teaching_categories.some(
-              (cat) => cat.toLowerCase() === selectedClassType.toLowerCase(),
-            );
-          }
-
-          return (
-            matchesInstructor &&
-            isAvailable &&
-            matchesInstrument &&
-            matchesClass
+          const compatible = isSlotCompatible(
+            s,
+            selectedInstrument,
+            selectedClassType,
           );
+
+          return matchesInstructor && isAvailable && compatible;
         })
         .map((s) => dayMap[s.day_of_week.toLowerCase()] || s.day_of_week),
     ),
@@ -220,10 +244,16 @@ const StepPilihJadwal = ({
       slots
         .filter((s) => {
           const dayApi = displayDayToApi[selectedDay];
+          const compatible = isSlotCompatible(
+            s,
+            selectedInstrument,
+            selectedClassType,
+          );
           return (
             s.instructor_id === selectedInstructorId &&
             s.day_of_week.toLowerCase() === dayApi &&
-            s.status === "available"
+            s.status === "available" &&
+            compatible
           );
         })
         .map((s) => `${s.start_time.slice(0, 5)} - ${s.end_time.slice(0, 5)}`),
@@ -240,11 +270,17 @@ const StepPilihJadwal = ({
             0,
             5,
           )}`;
+          const compatible = isSlotCompatible(
+            s,
+            selectedInstrument,
+            selectedClassType,
+          );
           return (
             s.instructor_id === selectedInstructorId &&
             s.day_of_week.toLowerCase() === dayApi &&
             timeStr === selectedTime &&
-            s.status === "available"
+            s.status === "available" &&
+            compatible
           );
         })
         .map((s) => s.room_name || "Regular Room"),
