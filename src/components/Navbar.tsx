@@ -40,11 +40,11 @@ const Navbar = () => {
   }, [menuOpen]);
 
   const navItems = [
-    { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
+    { path: "/", label: "Beranda" },
+    { path: "/about", label: "Tentang Kami" },
     { path: "/blog", label: "Blog" },
-    { path: "/ai-recommendation", label: "AI Recommendation" },
-    { path: "/registration", label: "Registration" },
+    { path: "/ai-recommendation", label: "Rekomendasi AI" },
+    { path: "/registration", label: "Pendaftaran" },
   ];
 
   return (
@@ -220,7 +220,7 @@ const Navbar = () => {
           <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-100">
             <div className="flex flex-col gap-2 text-center text-sm text-gray-500">
               <p className="font-medium">🎵 Shema Music Course</p>
-              <p className="text-xs">Learn music with passion</p>
+              <p className="text-xs">Belajar musik dengan semangat</p>
             </div>
           </div>
         </div>

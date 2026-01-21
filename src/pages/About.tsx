@@ -73,7 +73,7 @@ const About = () => {
         </section>
 
         {/* Perjalanan Kami Section */}
-        <section className="mx-auto px-4 md:px-24 py-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div
             initial="hidden"
             whileInView="visible"

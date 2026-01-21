@@ -56,7 +56,7 @@ const Footer = () => {
       <div className="bg-[#7a1834]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
           <p className="text-white/80">
-            © 2017–{new Date().getFullYear()} Shema Music. All Rights Reserved.
+            © 2017–{new Date().getFullYear()} Shema Music. Hak Cipta Dilindungi.
           </p>
 
           <div className="flex gap-5 uppercase text-xs tracking-wide">
